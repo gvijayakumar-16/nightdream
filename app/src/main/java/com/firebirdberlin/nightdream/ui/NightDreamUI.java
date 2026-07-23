@@ -1223,6 +1223,7 @@ public class NightDreamUI {
         removeCallbacks(backgroundChange);
 
         Runnable fixConfig = () -> {
+            clockLayout.setTypeface(settings.loadTypeface());
             float s = getScaleFactor(newConfig);
             clockLayout.setScaleFactor(s);
             Log.i(TAG, "fix = " + clockLayout.getHeight() + " " + s);
@@ -1588,8 +1589,11 @@ public class NightDreamUI {
         float s = settings.getScaleClock(config.orientation);
         float max = getMaxScaleFactor();
         if (s < 0.f) {
-            s = getProposedScaleFactor(max);
-            settings.setScaleClock(0.8f * max, config.orientation);
+            int otherOrientation = config.orientation == Configuration.ORIENTATION_LANDSCAPE
+                    ? Configuration.ORIENTATION_PORTRAIT : Configuration.ORIENTATION_LANDSCAPE;
+            float other = settings.getScaleClock(otherOrientation);
+            s = (other >= 0.f) ? other : getProposedScaleFactor(max);
+            settings.setScaleClock(s, config.orientation);
         }
         Log.d(TAG, String.format("getScaleFactor > %f %f", s, max));
 
