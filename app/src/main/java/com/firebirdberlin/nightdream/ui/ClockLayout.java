@@ -956,13 +956,17 @@ public class ClockLayout extends LinearLayout implements OnDateLongClickListener
     }
 
     public void setTimeFormat(String formatString, boolean is24HourFormat) {
+        setTimeFormat(formatString, is24HourFormat, false);
+    }
+
+    public void setTimeFormat(String formatString, boolean is24HourFormat, boolean hideAmPm) {
         if (clock != null) {
             CustomDigitalClock tclock = (CustomDigitalClock) clock;
             tclock.setCustomFormat(formatString);
         }
         if (clock_ampm != null) {
             CustomDigitalClock tclock = (CustomDigitalClock) clock_ampm;
-            tclock.setCustomFormat(is24HourFormat ? "" : "a");
+            tclock.setCustomFormat(is24HourFormat || hideAmPm ? "" : "a");
         }
         if (layoutId == LAYOUT_ID_DIGITAL_FLIP) {
             CustomDigitalFlipClock layout = findViewById(R.id.time_layout);

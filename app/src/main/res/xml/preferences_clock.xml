@@ -57,5 +57,11 @@
         app:title="@string/timeFormat"
         custom:formatType="time" />
 
+    <SwitchPreferenceCompat
+        app:iconSpaceReserved="false"
+        app:defaultValue="false"
+        app:key="hideAmPm"
+        app:title="@string/hide_am_pm"
+        app:summary="@string/hide_am_pm_summary" />
 
 </PreferenceScreen>

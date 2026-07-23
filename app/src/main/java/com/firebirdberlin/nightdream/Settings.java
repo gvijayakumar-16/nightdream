@@ -187,6 +187,7 @@ public class Settings {
     public String backgroundImageURI = "";
     public String dateFormat;
     public String timeFormat;
+    public boolean hideAmPm = false;
     private WeatherEntry weatherEntry;
     public Set<Integer> autostartWeekdays;
     public Set<Integer> alwaysOnWeekdays;
@@ -539,6 +540,7 @@ public class Settings {
         isUIlocked = settings.getBoolean("isUIlocked", false);
         dateFormat = settings.getString("dateFormat", getDefaultDateFormat());
         timeFormat = settings.getString("timeFormat", getDefaultTimeFormat());
+        hideAmPm = settings.getBoolean("hideAmPm", false);
         weather_icon = Integer.parseInt(settings.getString("weatherIconMode", "1"));
         batteryTimeout = getBatteryTimeoutMinutes();
 
@@ -859,7 +861,7 @@ public class Settings {
 
     public String getFullTimeFormat() {
         String timeFormat = getTimeFormat();
-        if (!is24HourFormat()) {
+        if (!is24HourFormat() && !hideAmPm) {
             timeFormat += " a";
         }
         return timeFormat;

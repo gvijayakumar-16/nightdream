@@ -825,7 +825,7 @@ public class NightDreamUI {
         clockLayout.setTypeface(settings.loadTypeface());
         clockLayout.setDateFormat(settings.dateFormat);
         String timeFormat = settings.getTimeFormat(layoutId);
-        clockLayout.setTimeFormat(timeFormat, settings.is24HourFormat());
+        clockLayout.setTimeFormat(timeFormat, settings.is24HourFormat(), settings.hideAmPm);
         clockLayout.setTemperature(
                 settings.showTemperature, settings.showApparentTemperature, settings.temperatureUnit
         );
