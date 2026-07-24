@@ -118,10 +118,12 @@ public class AutoAdjustTextView extends AppCompatTextView {
 
     public void setMaxWidth(int width) {
         this.maxWidth = width;
+        super.setMaxWidth(width);
     }
 
     public void setMaxHeight(int height) {
         this.maxHeight = height;
+        super.setMaxHeight(height);
     }
 
     public void setMaxFontSizesInSp(float minSize, float maxSize) {
