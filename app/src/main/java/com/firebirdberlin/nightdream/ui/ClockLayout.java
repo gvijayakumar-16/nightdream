@@ -221,7 +221,6 @@ public class ClockLayout extends LinearLayout implements OnDateLongClickListener
                 typeface != null
                         && !typeface.equals(FontCache.get(context, "fonts/dseg14classic.ttf"))
                         && !typeface.equals(FontCache.get(context, "fonts/7_segment_digital.ttf"))
-                        && !typeface.equals(FontCache.get(context, "fonts/dseg7classic_light.ttf"))
         ) {
             if (date != null) {
                 date.setTypeface(typeface);

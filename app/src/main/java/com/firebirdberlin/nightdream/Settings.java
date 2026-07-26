@@ -986,20 +986,20 @@ public class Settings {
 
     public String getFontUri(int clockLayoutId) {
         String key = getKeyForClockLayout("fontUri", clockLayoutId);
-        String def = "fonts/dseg7classic_light.ttf";
+        String def = "fonts/dseg14classic.ttf";
         if ("fontUri:6".equals(key)) {
             def = "fonts/roboto_thin.ttf";
         }
         String fontUri = settings.getString(key, def);
         if ("file:///android_asset/fonts/7segment.ttf".equals(fontUri)) {
-            return "fonts/dseg7classic_light.ttf";
+            return "fonts/7_segment_digital.ttf";
         }
         return fontUri;
     }
 
     public String getFontName(int clockLayoutId) {
         String key = getKeyForClockLayout("fontName", clockLayoutId);
-        String def = mContext.getString(R.string.typeface_7_segment_light);
+        String def = mContext.getString(R.string.typeface_14_segment);
         if ("fontUri:6".equals(key)) {
             def = mContext.getString(R.string.typeface_roboto_thin);
         }
