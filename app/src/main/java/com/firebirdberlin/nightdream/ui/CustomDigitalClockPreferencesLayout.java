@@ -167,7 +167,11 @@ public class CustomDigitalClockPreferencesLayout extends LinearLayout implements
             ManageFontsDialogFragment dialog = new ManageFontsDialogFragment();
             dialog.setIsPurchased(isPurchased);
             dialog.setSelectedUri(settings.getFontUri(layoutId));
-            dialog.setDefaultFonts("7_segment_digital.ttf");
+            dialog.setDefaultFonts(
+                    "roboto_regular.ttf", "roboto_light.ttf",
+                    "roboto_thin.ttf", "7_segment_digital.ttf", "dseg14classic.ttf",
+                    "dancingscript_regular.ttf"
+            );
             dialog.setOnFontSelectedListener(new ManageFontsDialogFragment.ManageFontsDialogListener() {
                 @Override
                 public void onFontSelected(Uri uri, String name) {
