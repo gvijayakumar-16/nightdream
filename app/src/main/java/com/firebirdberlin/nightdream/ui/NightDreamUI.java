@@ -217,7 +217,6 @@ public class NightDreamUI {
             removeCallbacks(hideBrightnessLevel);
 
             hideSystemUI();
-            setScreenOrientation(settings.screenOrientation);
             setupScreenAnimation();
 
             hideBatteryView(2000);
