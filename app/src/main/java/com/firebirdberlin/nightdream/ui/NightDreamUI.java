@@ -181,7 +181,6 @@ public class NightDreamUI {
         }
     };
     private final float LIGHT_VALUE_BRIGHT = 40.0f;
-    private final float LIGHT_VALUE_DAYLIGHT = 10000.0f;
     OnScaleGestureListener mOnScaleGestureListener = new OnScaleGestureListener() {
         @Override
         public boolean onScaleBegin(ScaleGestureDetector detector) {
@@ -662,6 +661,8 @@ public class NightDreamUI {
         Utility.registerEventBus(this);
         broadcastReceiver = registerBroadcastReceiver();
         initLightSensor();
+        // apply brightness right away instead of waiting for the next light sensor reading
+        dimScreen(0, last_ambient, settings.dim_offset);
     }
 
     private void initBackground() {
@@ -782,8 +783,7 @@ public class NightDreamUI {
             lightSensorEventListener.unregister();
             lightSensorEventListener = null;
         }
-        if (Settings.NIGHT_MODE_ACTIVATION_AUTOMATIC == settings.nightModeActivationMode
-                || settings.autoBrightness) {
+        if (Settings.NIGHT_MODE_ACTIVATION_AUTOMATIC == settings.nightModeActivationMode) {
             lightSensorEventListener = new LightSensorEventListener(mContext);
             lightSensorEventListener.register();
         }
@@ -1328,54 +1328,17 @@ public class NightDreamUI {
         return Math.max(value, min);
     }
 
-    private float calculateLogarithmicBrightnessFactor(float currentLightValue) {
-        // make sure all boundary values are positive
-        double min_lux_for_log = Math.max(0.1, this.LIGHT_VALUE_DARK);
-        double max_lux_for_log = Math.max(min_lux_for_log + 0.1, this.LIGHT_VALUE_DAYLIGHT);
-
-        // make sure the light value is in between boundaries
-        double clampedLightValue = Math.max(min_lux_for_log, Math.min(max_lux_for_log, currentLightValue));
-
-        double logMinLux = Math.log(min_lux_for_log);
-        double logMaxLux = Math.log(max_lux_for_log);
-        double logCurrentLux = Math.log(clampedLightValue);
-
-        // normalize to [0, 1]:
-        // (log(x) - log(min)) / (log(max) - log(min))
-        double normalizedLogarithmicValue;
-        if (logMaxLux - logMinLux == 0) {
-            // mean value
-            normalizedLogarithmicValue = 0.5;
-        } else {
-            normalizedLogarithmicValue = (logCurrentLux - logMinLux) / (logMaxLux - logMinLux);
-        }
-
-        // scale [0, 1] to [-1, 1]:
-        return (float) (2 * normalizedLogarithmicValue - 1);
-    }
-
     private void dimScreen(int millis, float light_value, float add_brightness) {
         LIGHT_VALUE_DARK = settings.minIlluminance;
         float v;
         float brightness;
-        if (mode != 0 && settings.autoBrightness && Utility.getLightSensor(mContext) != null) {
-//          1. calc log(light_value) -> [-1, 1]
-            float logarithmicBrightnessFactor = calculateLogarithmicBrightnessFactor(light_value);
-
-//          2. combine with manual preference
-            float combinedBrightnessFactor = (logarithmicBrightnessFactor + add_brightness) / 2.f;
-
-            brightness = combinedBrightnessFactor;
-            v = 1.f + brightness;
-
+        boolean followSystemBrightness = mode != 0 && settings.autoBrightness;
+        if (mode == 0) {
+            v = 1.f + settings.nightModeBrightness;
+            brightness = settings.nightModeBrightness;
         } else {
-            if (mode == 0) {
-                v = 1.f + settings.nightModeBrightness;
-                brightness = settings.nightModeBrightness;
-            } else {
-                v = 1.f + add_brightness;
-                brightness = add_brightness;
-            }
+            v = 1.f + add_brightness;
+            brightness = add_brightness;
         }
 
         float minBrightness = Math.max(1.f + settings.nightModeBrightness, 0.05f);
@@ -1388,8 +1351,13 @@ public class NightDreamUI {
             v = to_range(v, 0.5f, 1.f);
         }
 
-        brightness = getValidBrightnessValue(brightness);
-        setBrightness(brightness);
+        if (followSystemBrightness) {
+            // let the phone's own (possibly automatic) brightness setting apply
+            setBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+        } else {
+            brightness = getValidBrightnessValue(brightness);
+            setBrightness(brightness);
+        }
 
         //if ( showcaseView == null && !AlarmHandlerService.alarmIsRunning()) {
         long now = System.currentTimeMillis();
@@ -1434,16 +1402,13 @@ public class NightDreamUI {
         // On some screens (as the Galaxy S2) a value of 0 means the screen is completely dark.
         // Therefore a minimum value must be set to preserve the visibility of the clock.
         float minBrightness = Math.max(settings.nightModeBrightness, 0.01f);
-        if (settings.autoBrightness) {
-            minBrightness = Math.min(minBrightness, 0.1f);
-        }
         long now = System.currentTimeMillis();
         if (AlarmHandlerService.alarmIsRunning() && now > lastTouchTime + 1000 ) return 0.5f;
         return minBrightness;
     }
 
     private float getMaxAllowedBrightness() {
-        float maxBrightness = settings.autoBrightness ? Math.min(settings.maxBrightness, 1.f) : 1.f;
+        float maxBrightness = 1.f;
         if (!Utility.isPlugged(mContext)) {
             return Math.min(settings.maxBrightnessBattery, maxBrightness);
         }

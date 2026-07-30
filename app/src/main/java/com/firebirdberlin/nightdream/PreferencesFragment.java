@@ -159,10 +159,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
                             }
                             setupBrightnessControls(sharedPreferences);
                             break;
-                        case "minBrightness":
-                            int value = sharedPreferences.getInt("minBrightness", 1);
-                            settings.setNightModeBrightness(value / 100.f);
-                            break;
                         case "nightModeBrightnessInt":
                             int value1 = sharedPreferences.getInt("nightModeBrightnessInt", 0);
                             settings.setNightModeBrightness(value1 / 100.f);
@@ -846,10 +842,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
         if (brightnessOffset == null) {
             return;
         }
-        boolean hasLightSensor = (Utility.getLightSensor(mContext) != null);
-        boolean on = prefs.getBoolean("autoBrightness", false) && hasLightSensor;
+        boolean on = prefs.getBoolean("autoBrightness", false);
 
-        showPreference("autoBrightness", hasLightSensor);
         String title = getString(R.string.brightness);
         if (on) {
             title = getString(R.string.brightness_offset);
@@ -864,40 +858,16 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
         removePreference("minBrightness");
         float nightModeBrightness = prefs.getFloat("nightModeBrightness", 0.01f);
         SharedPreferences.Editor prefEditor = prefs.edit();
-        if (on) {
-            prefEditor.putInt("minBrightness", (int) (100 * nightModeBrightness));
-            prefEditor.apply();
-
-            InlineSeekBarPreference prefMinBrightness = new InlineSeekBarPreference(mContext);
-            prefMinBrightness.setKey("minBrightness");
-            prefMinBrightness.setTitle(getString(R.string.minBrightness));
-            prefMinBrightness.setSummary("");
-            prefMinBrightness.setRange(-100, 100);
-            prefMinBrightness.setDefaultValue(0);
-            prefMinBrightness.setIconSpaceReserved(false);
-
-            InlineSeekBarPreference prefMaxBrightness = new InlineSeekBarPreference(mContext);
-            prefMaxBrightness.setKey("maxBrightness");
-            prefMaxBrightness.setTitle(getString(R.string.maxBrightness));
-            prefMaxBrightness.setSummary("");
-            prefMaxBrightness.setRange(1, 100);
-            prefMaxBrightness.setDefaultValue(50);
-            prefMaxBrightness.setIconSpaceReserved(false);
-
-            category.addPreference(prefMinBrightness);
-            category.addPreference(prefMaxBrightness);
-        } else {
-            prefEditor.putInt("nightModeBrightnessInt", (int) (100 * nightModeBrightness));
-            prefEditor.apply();
-            InlineSeekBarPreference prefNightModeBrightness = new InlineSeekBarPreference(mContext);
-            prefNightModeBrightness.setKey("nightModeBrightnessInt");
-            prefNightModeBrightness.setTitle(getString(R.string.brightness_night_mode));
-            prefNightModeBrightness.setSummary("");
-            prefNightModeBrightness.setRange(-100, 100);
-            prefNightModeBrightness.setDefaultValue(0);
-            prefNightModeBrightness.setIconSpaceReserved(false);
-            category.addPreference(prefNightModeBrightness);
-        }
+        prefEditor.putInt("nightModeBrightnessInt", (int) (100 * nightModeBrightness));
+        prefEditor.apply();
+        InlineSeekBarPreference prefNightModeBrightness = new InlineSeekBarPreference(mContext);
+        prefNightModeBrightness.setKey("nightModeBrightnessInt");
+        prefNightModeBrightness.setTitle(getString(R.string.brightness_night_mode));
+        prefNightModeBrightness.setSummary("");
+        prefNightModeBrightness.setRange(-100, 100);
+        prefNightModeBrightness.setDefaultValue(0);
+        prefNightModeBrightness.setIconSpaceReserved(false);
+        category.addPreference(prefNightModeBrightness);
 
         InlineSeekBarPreference prefMaxBrightnessBattery = new InlineSeekBarPreference(mContext);
         prefMaxBrightnessBattery.setKey("maxBrightnessBattery");
