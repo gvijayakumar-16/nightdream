@@ -1331,7 +1331,7 @@ public class NightDreamUI {
         LIGHT_VALUE_DARK = settings.minIlluminance;
         float v;
         float brightness;
-        boolean followSystemBrightness = mode != 0 && settings.autoBrightness;
+        boolean followSystemBrightness = mode != 0 && settings.autoBrightness && Utility.isPlugged(mContext);
         if (mode == 0) {
             v = 1.f + settings.nightModeBrightness;
             brightness = settings.nightModeBrightness;
