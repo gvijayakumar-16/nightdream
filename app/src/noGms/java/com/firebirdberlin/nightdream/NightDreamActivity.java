@@ -446,6 +446,7 @@ public class NightDreamActivity extends BillingHelperActivity
             AudioManage.activateDnDMode(true, mySettings.activateDoNotDisturbAllowPriority);
         }
         ScreenWatcherService.conditionallyStart(this, mySettings);
+        setupNightMode();
 
         scheduleShutdown();
         nReceiver = registerNotificationReceiver();
